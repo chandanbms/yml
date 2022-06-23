@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: addressbook-deployment
+  labels:
+    app: address
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: address
+  template:
+    metadata:
+      labels:
+        app: address
+    spec:
+      containers:
+      - name: address
+        image: chandanbms/addressbook:latest
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - mountPath: /usr/local/tomcat/logs
+          name: volume
+      volumes:
+      - name: volume
+        hostPath:
+          path: /home/chandan/logs
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: addr-service
+spec:
+  selector:
+    app: address
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+      nodePort: 30006
+  type: NodePort
